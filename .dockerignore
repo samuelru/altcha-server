@@ -1,0 +1,19 @@
+# Ignore git files
+.git
+.gitignore
+
+# Ignore build artifacts
+altcha-server.exe
+altcha-server
+
+# Ignore log and data files
+challenges.log
+solutions.txt
+verifications.log
+
+# Ignore IDE files
+.idea
+.vscode
+
+# Ignore test files (if needed)
+test.http
