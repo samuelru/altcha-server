@@ -25,6 +25,70 @@ docker run -p 3947:3947 \
   altcha-server:latest
 ```
 
+### Running with Docker Compose (Docker Desktop)
+
+For a more persistent setup on Docker Desktop, use a `docker-compose.yml` file:
+
+```yaml
+version: '3.8'
+
+services:
+  altcha:
+    image: altcha-server:latest
+    ports:
+      - "3947:3947"
+    environment:
+      - ALTCHA_SECRET=your_very_secret_key
+      - ALTCHA_CORS_ORIGIN=https://your-frontend.com
+    volumes:
+      - ./data:/app
+```
+
+Then run it with:
+
+```bash
+docker-compose up -d
+```
+
+### Running in Docker Swarm with Traefik
+
+If you're using Docker Swarm and Traefik as a reverse proxy, you can deploy it with the following stack definition:
+
+```yaml
+version: '3.8'
+
+services:
+  altcha:
+    image: altcha-server:latest
+    networks:
+      - traefik-public
+    environment:
+      - ALTCHA_SECRET=your_very_secret_key
+      - ALTCHA_CORS_ORIGIN=https://altcha.example.com
+    volumes:
+      - altcha-data:/app
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.altcha.rule=Host(`altcha.example.com`)"
+        - "traefik.http.routers.altcha.entrypoints=websecure"
+        - "traefik.http.routers.altcha.tls.certresolver=myresolver"
+        - "traefik.http.services.altcha.loadbalancer.server.port=3947"
+
+volumes:
+  altcha-data:
+
+networks:
+  traefik-public:
+    external: true
+```
+
+Deploy the stack:
+
+```bash
+docker stack deploy -c docker-compose.yml altcha
+```
+
 ### Running from Binary
 
 If you have the binary:
